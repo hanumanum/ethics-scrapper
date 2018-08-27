@@ -7,8 +7,11 @@ module.exports = {
             fName:"",
             mName:"",
             lName:"",
+            currentPositionTitle:"",
+            currentPositionFrom:"",
             source:url,
-            reports:[],
+            reportsList:[],
+            relatedPersonsList:[]
         }
         request(url, function(error, response, html){
             if(!error){
@@ -18,7 +21,6 @@ module.exports = {
                 person.mName =  fullName[1];
                 person.lName =  fullName[2];
                 
-
                 let m =  $(".pers-title").contents()
                     .filter(function() {
                         return this.nodeType === 3; //Node.TEXT_NODE
@@ -31,15 +33,33 @@ module.exports = {
                 let reportsList = $("#content ul").first();
                 let regexForYear = /\(([^)]+)\)/;
                 reportsList.children().each(function(index, rep){
-                    person.reports.push({
+                    person.reportsList.push({
                         "reportLink":$(rep).find("a").prop("href"),
                         "reportTitle":$(rep).find("a").text(),
                         "reportPosition":$(rep).text().split("\n\t\t")[1],
                         "reportYear":regexForYear.exec($(rep).find("a").text())[1]
-
                     })
-                
                 })
+
+
+                //Relation Declarations
+                $("#relations-decl > tbody >tr").each(function(index, relatedPerson){
+                    let tdsInrow = $(relatedPerson).find("td");
+                    if(tdsInrow[0]){  //for first row eg. table headings
+                        let fullName = $(tdsInrow[0]).text().split(" ");
+                        person.relatedPersonsList.push(
+                        {
+                            fName:fullName[0],
+                            mName:fullName[1],
+                            lName:fullName[2],
+                            relationType:$(tdsInrow[1]).text()
+                        })
+                        //console.log($(tdsInrow[2]).html());
+                    }
+                    
+                    //let name = relatedPerson.children("td")[0].text();
+                    //console.log(name);
+                });
 
                 next(person);
             }
