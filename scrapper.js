@@ -47,14 +47,24 @@ module.exports = {
                     let tdsInrow = $(relatedPerson).find("td");
                     if(tdsInrow[0]){  //for first row eg. table headings
                         let fullName = $(tdsInrow[0]).text().split(" ");
+                        let relationDeclarations = [];
+                        
+                        $(tdsInrow[2]).find("ul>li>a").each(function(index,link){
+                            relationDeclarations.push(
+                                {"reportLink":$(link).prop("href"),
+                                 "reportTitle":$(link).text()
+                                }
+                            )
+                        })
+                        
                         person.relatedPersonsList.push(
                         {
                             fName:fullName[0],
                             mName:fullName[1],
                             lName:fullName[2],
-                            relationType:$(tdsInrow[1]).text()
+                            relationType:$(tdsInrow[1]).text(),
+                            relationDeclarations:relationDeclarations
                         })
-                        //console.log($(tdsInrow[2]).html());
                     }
                     
                 });
