@@ -57,8 +57,6 @@ module.exports = {
                         //console.log($(tdsInrow[2]).html());
                     }
                     
-                    //let name = relatedPerson.children("td")[0].text();
-                    //console.log(name);
                 });
 
                 next(person);
