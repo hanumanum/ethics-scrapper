@@ -73,6 +73,25 @@ module.exports = {
             }
         })
     }
+
+    ,scrappDeclacation:function(url, next){
+        let declaration = {
+            docTitle:"",
+            currentPositionTitle:"",
+            currentPositionFrom:"",
+            source:url,
+        }
+        request(url, function(error, response, html){
+            if(!error){
+                let $ = cheerio.load(html);
+                declaration.docTitle=$(".ttl").first().text().toLocaleLowerCase();
+
+                next(declaration);
+            }
+        })
+    }
+
+
 }
 
 
