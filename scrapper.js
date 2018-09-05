@@ -80,12 +80,13 @@ module.exports = {
             docTitle:"",
             year:"",
             source:url,
-            table2:[],  //ՀԱՅՏԱՐԱՐԱՏՈՒ ՊԱՇՏՈՆԱՏԱՐ ԱՆՁԻ ԳՈՒՅՔԸ
-            table3:[],  //
-            table4:[],
-            table5:[],
-            table6:[],
-            table7:[]
+            table1:[],  //անշարժ գույքը
+            table2:[],  //շարժական գույքը
+            table3:[],  //արժեթղթերը
+            table4:[],  //փոխառությունները
+            table5:[],  //թանկարժեք գույքը
+            table6:[],  //դրամական միջոցները
+            table7:[]   //եկամուտները հարկային տարում
         }
         request(url, function(error, response, html){
             if(!error){
@@ -94,11 +95,11 @@ module.exports = {
                 
                 let tables = $(".tbl.mcol")
                                           
-                //Second Data Table //ձեռքբերած և օտարած անշարժ գույքը
-                let table2 = $(tables).eq(2).find("tr"); 
-                table2.each(function(index,tr){
+                //1st Data Table //ձեռքբերած և օտարած անշարժ գույքը
+                let table1 = $(tables).eq(2).find("tr"); 
+                table1.each(function(index,tr){
                     if(index>3){               //Avoide table's headers
-                        declaration.table2.push(
+                        declaration.table1.push(
                             {
                                 nn:extractFromTR($,tr,0),
                                 type:extractFromTR($,tr,1),
@@ -115,11 +116,11 @@ module.exports = {
                 });
 
                
-                //3th data table //շարժական գույքը
-                let table3 = $(tables).eq(3).find("tr");
-                table3.each(function(index,tr){
+                //2th data table //շարժական գույքը
+                let table2 = $(tables).eq(3).find("tr");
+                table2.each(function(index,tr){
                     if(index>2){//Avoide table's headers
-                        declaration.table3.push(
+                        declaration.table2.push(
                             {
                                 nn:extractFromTR($,tr,0),
                                 type:extractFromTR($,tr,1),
@@ -139,10 +140,10 @@ module.exports = {
 
 
                 //4th data table //արժեթղթերը
-                let table4 = $(tables).eq(4).find("tr");
-                table4.each(function(index,tr){
+                let table3 = $(tables).eq(4).find("tr");
+                table3.each(function(index,tr){
                     if(index>2){//Avoide table's headers
-                        declaration.table4.push(
+                        declaration.table3.push(
                             {
                                 nn:extractFromTR($,tr,0),
                                 type:extractFromTR($,tr,1),
@@ -157,7 +158,44 @@ module.exports = {
                     
                 });
 
+                //4th data table //փոխառությունները
+                let table4 = $(tables).eq(5).find("tr");
+                table4.each(function(index,tr){
+                    if(index>1){//Avoide table's headers
+                        declaration.table4.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                currency:extractFromTR($,tr,3),
+                                valueStart:formatMoney(extractFromTR($,tr,4)),
+                                givedValue:formatMoney(extractFromTR($,tr,5)),
+                                returnedValue:formatMoney(extractFromTR($,tr,6)),
+                                valueEnd:formatMoney(extractFromTR($,tr,7)),
+                            }
+                        )
+                    }
+                    
+                });
 
+
+                //5th data table //թանկարժեք գույքը
+                let table5 = $(tables).eq(6).find("tr");
+                table5.each(function(index,tr){
+                    if(index>1){//Avoide table's headers
+                        declaration.table5.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                type:extractFromTR($,tr,1),
+                                existsAtStart:formatYesNo(extractFromTR($,tr,2)),
+                                acquiredValue:formatMoney(extractFromTR($,tr,3)),
+                                acquiredCurrency:remNl(extractFromTR($,tr,4)),
+                                removedValue:formatMoney(extractFromTR($,tr,5)),
+                                removedCurrency:remNl(extractFromTR($,tr,6)),
+                                existsAtEnd:formatYesNo(extractFromTR($,tr,7)),
+                
+                            }
+                        )
+                    }
+                });
 
                 next(declaration);
             }
