@@ -92,11 +92,10 @@ module.exports = {
                 let $ = cheerio.load(html);
                 declaration.docTitle=$(".ttl").first().text().toLocaleLowerCase();
                 
-                console.log("---------------------------------------------")
-
-                let table2 = $(".tbl.mcol")
-                                .eq(2)          //Second Data Table
-                                .find("tr")
+                let tables = $(".tbl.mcol")
+                                          
+                //Second Data Table //ձեռքբերած և օտարած անշարժ գույքը
+                let table2 = $(tables).eq(2).find("tr"); 
                 table2.each(function(index,tr){
                     if(index>3){               //Avoide table's headers
                         declaration.table2.push(
@@ -116,6 +115,48 @@ module.exports = {
                 });
 
                
+                //3th data table //շարժական գույքը
+                let table3 = $(tables).eq(3).find("tr");
+                table3.each(function(index,tr){
+                    if(index>2){//Avoide table's headers
+                        declaration.table3.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                type:extractFromTR($,tr,1),
+                                serie:remNl(extractFromTR($,tr,2)),
+                                existsAtStart:formatYesNo(extractFromTR($,tr,3)),
+                                acquiredValue:formatMoney(extractFromTR($,tr,4)),
+                                acquiredCurrency:remNl(extractFromTR($,tr,5)),
+                                removedValue:formatMoney(extractFromTR($,tr,6)),
+                                removedCurrency:remNl(extractFromTR($,tr,7)),
+                                existsAtEnd:formatYesNo(extractFromTR($,tr,8)),
+                            }
+                        )
+                    }
+                    
+                });
+
+
+
+                //4th data table //արժեթղթերը
+                let table4 = $(tables).eq(4).find("tr");
+                table4.each(function(index,tr){
+                    if(index>2){//Avoide table's headers
+                        declaration.table4.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                type:extractFromTR($,tr,1),
+                                currency:extractFromTR($,tr,2),
+                                startValue:formatMoney(extractFromTR($,tr,3)),
+                                acquiredValue:formatMoney(extractFromTR($,tr,4)),
+                                removedValue:formatMoney(extractFromTR($,tr,5)),
+                                endValue:formatMoney(extractFromTR($,tr,6)),
+                            }
+                        )
+                    }
+                    
+                });
+
 
 
                 next(declaration);
