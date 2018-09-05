@@ -75,16 +75,48 @@ module.exports = {
     }
 
     ,scrappDeclacation:function(url, next){
+
         let declaration = {
             docTitle:"",
-            currentPositionTitle:"",
-            currentPositionFrom:"",
+            year:"",
             source:url,
+            table2:[],  //ՀԱՅՏԱՐԱՐԱՏՈՒ ՊԱՇՏՈՆԱՏԱՐ ԱՆՁԻ ԳՈՒՅՔԸ
+            table3:[],  //
+            table4:[],
+            table5:[],
+            table6:[],
+            table7:[]
         }
         request(url, function(error, response, html){
             if(!error){
                 let $ = cheerio.load(html);
                 declaration.docTitle=$(".ttl").first().text().toLocaleLowerCase();
+                
+                console.log("---------------------------------------------")
+
+                let table2 = $(".tbl.mcol")
+                                .eq(2)          //Second Data Table
+                                .find("tr")
+                table2.each(function(index,tr){
+                    if(index>3){               //Avoide table's headers
+                        declaration.table2.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                type:extractFromTR($,tr,1),
+                                existsAtStart:formatYesNo(extractFromTR($,tr,3)),
+                                acquiredValue:formatMoney(extractFromTR($,tr,4)),
+                                acquiredCurrency:remNl(extractFromTR($,tr,5)),
+                                removedValue:formatMoney(extractFromTR($,tr,6)),
+                                removedCurrency:remNl(extractFromTR($,tr,7)),
+                                existsAtEnd:formatYesNo(extractFromTR($,tr,8)),
+                            }
+                        )
+                    }
+                    
+                });
+
+               
+
 
                 next(declaration);
             }
@@ -95,11 +127,25 @@ module.exports = {
 }
 
 
-
-
-   
+function extractFromTR($,tr,index){
+    return $($(tr).find("td")[index]).text()
     
+}
 
-   
+
+function formatMoney(amount){
+    return amount.trim()
+                  .split(",")
+                  .join("")
+}
+
+
+function formatYesNo(data){
+    return (data=="ԱՅՈ")? true:false
+}
+
+function remNl(data){
+    return data.replace("\n", "");
+}
 
     
