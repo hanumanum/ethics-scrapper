@@ -98,7 +98,7 @@ module.exports = {
                 //1st Data Table //ձեռքբերած և օտարած անշարժ գույքը
                 let table1 = $(tables).eq(2).find("tr"); 
                 table1.each(function(index,tr){
-                    if(index>3){               //Avoide table's headers
+                    if(index>3 && !isCaption(extractFromTR($,tr,0))){               //Avoide table's headers
                         declaration.table1.push(
                             {
                                 nn:extractFromTR($,tr,0),
@@ -119,7 +119,7 @@ module.exports = {
                 //2th data table //շարժական գույքը
                 let table2 = $(tables).eq(3).find("tr");
                 table2.each(function(index,tr){
-                    if(index>2){//Avoide table's headers
+                    if(index>2 && !isCaption(extractFromTR($,tr,0))){//Avoide table's headers
                         declaration.table2.push(
                             {
                                 nn:extractFromTR($,tr,0),
@@ -142,7 +142,7 @@ module.exports = {
                 //4th data table //արժեթղթերը
                 let table3 = $(tables).eq(4).find("tr");
                 table3.each(function(index,tr){
-                    if(index>2){//Avoide table's headers
+                    if(index>2 && !isCaption(extractFromTR($,tr,0))){//Avoide table's headers
                         declaration.table3.push(
                             {
                                 nn:extractFromTR($,tr,0),
@@ -161,7 +161,7 @@ module.exports = {
                 //4th data table //փոխառությունները
                 let table4 = $(tables).eq(5).find("tr");
                 table4.each(function(index,tr){
-                    if(index>1){//Avoide table's headers
+                    if(index>1 && !isCaption(extractFromTR($,tr,0))){//Avoide table's headers
                         declaration.table4.push(
                             {
                                 nn:extractFromTR($,tr,0),
@@ -180,7 +180,7 @@ module.exports = {
                 //5th data table //թանկարժեք գույքը
                 let table5 = $(tables).eq(6).find("tr");
                 table5.each(function(index,tr){
-                    if(index>1){//Avoide table's headers
+                    if(index>2 && !isCaption(extractFromTR($,tr,0))){//Avoide table's headers
                         declaration.table5.push(
                             {
                                 nn:extractFromTR($,tr,0),
@@ -192,6 +192,39 @@ module.exports = {
                                 removedCurrency:remNl(extractFromTR($,tr,6)),
                                 existsAtEnd:formatYesNo(extractFromTR($,tr,7)),
                 
+                            }
+                        )
+                    }
+                });
+
+
+                //6th data table //դրամական միջոցները
+                let table6 = $(tables).eq(7).find("tr");
+                table6.each(function(index,tr){
+                    if(index>1 && !isCaption(extractFromTR($,tr,0))){//Avoide table's headers
+                        declaration.table6.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                currency:remNl(extractFromTR($,tr,1)),
+                                valueStart:formatMoney(extractFromTR($,tr,2)),
+                                valueEnd:formatMoney(extractFromTR($,tr,3))
+                            }
+                        )
+                    }
+                });
+
+                //7th data table //եկամուտները
+                let table7 = $(tables).eq(8).find("tr");
+                table7.each(function(index,tr){
+                    if(index>2 && !isCaption(extractFromTR($,tr,0))){//Avoide table's headers
+                        declaration.table7.push(
+                            {
+                                nn:extractFromTR($,tr,0),
+                                title:remNl(extractFromTR($,tr,1)),
+                                currency:remNl(extractFromTR($,tr,4)),
+                                incomeAMD:formatMoney(extractFromTR($,tr,5)),
+                                incomeForign:formatMoney(extractFromTR($,tr,6)),
+                                incomeNature:formatMoney(extractFromTR($,tr,7))
                             }
                         )
                     }
@@ -227,4 +260,6 @@ function remNl(data){
     return data.replace("\n", "");
 }
 
-    
+function isCaption(data){
+    return data.indexOf("Տվյալներ չկան")>-1 || data.indexOf("Ընդամենը")>-1;
+}
